@@ -1,0 +1,24 @@
+version: "3"
+
+# Définir les différents services (conteneurs) qui vont tourner en même temps lors de l'éxécution du Docker-Compose
+services:
+
+  # Utilise l'image de base Redis pour tourner
+  redis:
+   image: redis
+
+  # Besoin d'une image pour fonctionner (si image spécifié n'est pas présente il va la télécharger depuis le docker up)
+  application:
+
+    image: dockerfacile/app
+
+    depends_on:
+      - redis
+
+    # Variables environnment
+    environment:
+      starwars: 1
+
+    # Spécifie les ports de notre application -port_intern:port_externe
+    ports:
+      - 5000:5000

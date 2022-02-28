@@ -1,0 +1,60 @@
+version: "3"
+
+# # Définir les différents services (conteneurs) qui vont tourner en même temps lors de l'éxécution du Docker-Compose
+# services:
+
+#   # Utilise l'image de base Redis pour tourner
+#   redis:
+#    image: redis
+
+#   # Besoin d'une image pour fonctionner (si image spécifié n'est pas présente il va la télécharger depuis le docker up)
+#   application:
+#     image: dockerfacile/app
+
+#     # Spécifie les ports de notre application -port_intern:port_externe
+#     ports:
+#       - 5000:5000
+
+
+# # Puis " docker-compose up " POUR TUTO VIDEO => NE MARCHE PAS, le suivant si
+
+####################### WORDPRESS ###############################################
+
+# Définir les différents services (conteneurs) qui vont tourner en même temps lors de l'éxécution du Docker-Compose
+services:
+
+  # Base de donnée SQL avec le path du volume où partager les ressources
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+
+    # Si le serveur s'arrête il redémarrera
+    restart: always
+
+    # Variables environnment
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  wordpress:
+
+    # Permet crééer dépendance entre deux conteneurs, Docker démarrera d'abord service db avec WordPress (car wordpress dépend base de données)
+    depends_on:
+      - db
+    image: wordpress:latest
+
+    # Dire à Docker-Compose on veut exposer un port de notre machine hôte vers conteneur
+    ports:
+      - "8000:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+volumes:
+  db_data: {}
